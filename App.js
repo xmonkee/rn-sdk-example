@@ -1,21 +1,59 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import React, { useState, useRef } from "react";
+import { StyleSheet, SafeAreaView, Button, Text, View } from "react-native";
+import { createCheckout } from "./backend";
+import AptWebview from "./AptWebView";
 
 export default function App() {
+  const [status, setStatus] = useState("PENDING");
+  const redirectUrl = useRef(null);
+
+  async function startFlow() {
+    setStatus("GETTING_TOKEN")
+    const { redirectCheckoutUrl } = await createCheckout();
+    redirectUrl.current = redirectCheckoutUrl;
+    setStatus("IN_PROGRESS");
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.button}>
+        <Button
+          disabled={status === "GETTING_TOKEN"}
+          style={styles.button}
+          title="Afterpay It!"
+          onPress={() => startFlow()}
+        />
+      </View>
+      <Text style={styles.status}>Status: {status}</Text>
+      {status === "IN_PROGRESS" ? (
+        <View>
+        <AptWebview
+          redirectUrl={redirectUrl.current}
+          onClose={() => setStatus("PENDING")}
+          onStatus={(status) => setStatus(status)}
+        /></View>
+      ) : null}
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center"
   },
+  button: {
+    borderRadius: 5,
+    backgroundColor: "#b2fce4",
+    width: "50%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  status: {
+    margin: 10,
+  }
 });
