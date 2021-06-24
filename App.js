@@ -9,7 +9,7 @@ export default function App() {
   const redirectUrl = useRef(null);
 
   async function startFlow() {
-    setStatus("GETTING_TOKEN")
+    setStatus("GETTING_TOKEN");
     const { redirectCheckoutUrl } = await createCheckout();
     redirectUrl.current = redirectCheckoutUrl;
     setStatus("IN_PROGRESS");
@@ -28,11 +28,11 @@ export default function App() {
       <Text style={styles.status}>Status: {status}</Text>
       {status === "IN_PROGRESS" ? (
         <View>
-        <AptWebview
-          redirectUrl={redirectUrl.current}
-          onClose={() => setStatus("PENDING")}
-          onStatus={(status) => setStatus(status)}
-        /></View>
+          <AptWebview
+            redirectUrl={redirectUrl.current}
+            onStatus={(status) => setStatus(status)}
+          />
+        </View>
       ) : null}
       <StatusBar style="auto" />
     </SafeAreaView>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   button: {
     borderRadius: 5,
@@ -55,5 +55,5 @@ const styles = StyleSheet.create({
   },
   status: {
     margin: 10,
-  }
+  },
 });

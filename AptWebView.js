@@ -1,8 +1,8 @@
 import React from "react";
 import { WebView } from "react-native-webview";
-import { Modal, Platform, SafeAreaView } from "react-native";
+import { Modal, Platform } from "react-native";
 
-export default function AptWebview({ redirectUrl, onClose, onStatus }) {
+export default function AptWebview({ redirectUrl, onStatus }) {
   function handleAfterpayResponse(event) {
     const path = event.url || "";
     if (path.includes("status=CANCELLED")) {
@@ -15,20 +15,19 @@ export default function AptWebview({ redirectUrl, onClose, onStatus }) {
   return (
     <Modal
       onRequestClose={() => {
-        onClose();
+        onStatus("CANCELLED");
       }}
     >
-      <SafeAreaView>
-        <WebView
-          useWebKit={Platform.OS == "ios"}
-          domStorageEnabled={true}
-          startInLoadingState={true}
-          onNavigationStateChange={(event) => handleAfterpayResponse(event)}
-          javaScriptEnabled={true}
-          originWhitelist={["*"]}
-          source={{ uri: redirectUrl }}
-        />
-      </SafeAreaView>
+      <WebView
+        style={{ marginTop: 18 }}
+        useWebKit={Platform.OS == "ios"}
+        domStorageEnabled={true}
+        startInLoadingState={true}
+        onNavigationStateChange={(event) => handleAfterpayResponse(event)}
+        javaScriptEnabled={true}
+        originWhitelist={["*"]}
+        source={{ uri: redirectUrl }}
+      />
     </Modal>
   );
 }
